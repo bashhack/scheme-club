@@ -155,6 +155,17 @@
 ;; What happens when Alyssa attempts to use this to compute square roots?
 ;; Explain.
 
+;; When Alyssa defined the custom function 'new-if', what was not accounted
+;; for was effect of 'applicative-order evaluation'.
+;; Because the conveniences afforded by the special-form 'if' are removed,
+;; we are dealing with a function subject to an evaluation strategy that
+;; would see the innermost function application resolved first - but, since
+;; this is a recursive call `(sqrt-iter (improve guess x) x)`, the interpreter
+;; would find itself in an infinite loop.
+;; When using the special form of `if`, the `else` branch is simply never run,
+;; because 'if the "predicate" evaluates to a true value, the interpreter
+;; then evaluates the "consequent" and returns its value'.
+
 ;; 1.7
 
 ;; The `good-enough?` test used in computing square roots will not be very
@@ -169,6 +180,96 @@
 ;; that uses this kind of end test. Does this work better for small or
 ;; large numbers?
 
+(define square
+  (lambda (x)
+    (* x x)))
+
+(define sqrt-iter
+  (lambda (guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x))))
+
+(define improve
+  (lambda (guess x)
+    (average guess (/ x guess))))
+
+(define average
+  (lambda (x y)
+    (/ (+ x y) 2)))
+
+(define good-enough?
+  (lambda (guess x)
+    (< (abs (- (square guess) x)) 0.001)))
+
+(define our-sqrt
+  (lambda (x)
+    (sqrt-iter 1.0 x)))
+
+(our-sqrt 0.004)
+(sqrt 0.004)
+(< 0.001 (* (our-sqrt 0.001) (our-sqrt 0.001)))
+(our-sqrt 99999999999999999)
+(not (= (sqrt 9) (our-sqrt 9)))
+
+;; Here, we see two issues:
+;; the most straight-forward is in the case of the smaller values,
+;; where we see that our epsilon value is simply too large to account
+;; for the much smaller difference between 'guess' and 'x' in 'good-enough?'
+
+;; For example, this would return #t where it would not make sense to do so:
+(good-enough? 0.0001 0.000000001)
+(* 0.000000001 0.000000001) ;; .0000000000000000001
+
+;; Here, we can wee that the difference between the our calculation and
+;; expected calculation was less than our epsilon:
+(< 0.001 (- (our-sqrt 0.000000001) (sqrt 0.000000001)))
+
+;; In the case of the larger values, we're encountering an expected issue
+;; with floating-point precision that goes well beyond Scheme. As the
+;; value of 'x' increases, our guesses become so large that we become
+;; unable to represent that value within the bound of our epsilon tolerance.
+;; On my 64-bit CPU, that value is near 99999999999999999, at which point
+;; no value is returned and the process winds up in infinite recusion.
+
+(define square-alt
+  (lambda (x)
+    (* x x)))
+
+(define sqrt-iter-alt
+  (lambda (previous-guess guess x)
+    (if (good-enough-alt? previous-guess guess)
+        guess
+        (sqrt-iter-alt guess (improve-alt guess x) x))))
+
+(define improve-alt
+  (lambda (guess x)
+    (average-alt guess (/ x guess))))
+
+(define average-alt
+  (lambda (x y)
+    (/ (+ x y) 2)))
+
+(define good-enough-alt?
+  (lambda (previous-guess guess)
+    (< (abs (- previous-guess guess)) 0.001)))
+
+(define our-sqrt-alt
+  (lambda (x)
+    (sqrt-iter-alt 0 1.0 x)))
+
+(< (our-sqrt-alt .000004) (our-sqrt .000004))
+(< (our-sqrt-alt 9) (our-sqrt 9))
+(< (our-sqrt-alt 100000000000) (our-sqrt 100000000000))
+
+;; I modified the original `good-enough?` to take into account
+;; the previous-guess in the form of `good-enough-alt?`.
+;; Likewise, I then updated the signature of the main `sqrt-iter-alt`
+;; procedure, such that I could provide a starting (or previous-guess)
+;; value when initializing `our-sqrt-alt`.
+;; In general, there is an improvement on precision for smaller values,
+;; while larger values retain their inaccuracies.
+
 ;; 1.8
 
 ;; Newton's method for cube roots is based on the fact that if `y` is
@@ -181,5 +282,3 @@
 
 ;; Use this formula to implement a cube-root procedure analogous to the
 ;; square-root procedure.
-
-

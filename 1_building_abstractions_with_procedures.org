@@ -145,3 +145,43 @@
       or returning a value of undefined if no true value is found.
 **** `cond`/`if` forms, along with primitive predicates (`<`, `=`, and `>`) and logical
       operators (`and`/`or`/`not`) allow us to write compound predicates
+*** Section 1.1.7 - Example: Square Roots by Newton's Method
+**** Functions in Scheme are much like functions in maths
+**** They map inputs to outputs, or - said another way - potential return values to potential parameters
+**** Functions in Scheme, unlike in maths, must be effectively computable
+**** The 'contrast between [mathematical] function and procedure is a reflection of the general
+     distinction between describing properties of things and describing how to do things ...
+     or between declarative knowledge and imperative knowledge .... In mathematics we are
+     usually concerned with declarative (what is) ... in computer science we are usually
+     concerned with imperative (how to) descriptions'
+**** Let's take a look at finding square roots to flesh out this distinction:
+
+     Declarative:
+     "Use Newton's successive approximations technique: when we guess 'y' for the value
+      of the square root of a number 'x', we can average 'x/y' to get a better guess"
+
+     Imperative:
+     #+BEGIN_SRC scheme
+      (define sqrt-iter
+        (lambda (guess x)
+          (if (good-enough? guess x)
+              guess
+              (sqrt-iter (improve guess x) x))))
+
+      (define improve
+        (lambda (guess x)
+          (average guess (/ x guess))))
+
+      (define average
+        (lambda (x y)
+          (/ (+ x y) 2)))
+
+      (define good-enough?
+        (lambda (guess x)
+          (< (abs (- (square guess) x)) 0.001)))
+
+      (define sqrt
+        (lambda (x)
+          (sqrt-iter 1.0 x)))
+     #+END_SRC
+     

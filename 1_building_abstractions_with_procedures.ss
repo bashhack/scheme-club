@@ -37,25 +37,69 @@ circumference
 
 ;; 1.1.4
 
-(define (square x) (* x x))
+(define square
+  (lambda (x)
+    (* x x)))
 
 (square 2)
 
-(define (sum-of-squares x y)
-  (+ (square x) (square y)))
+(define sum-of-squares
+  (lambda (x y)
+    (+ (square x) (square y))))
 
 (sum-of-squares 3 4)
 
 ;; 1.1.6
 
-(define (abs x)
-  (cond ((< x 0) (- x))
-        (else x)))
+(define abs
+  (lambda (x)
+    (cond ((< x 0) (- x))
+          (else x))))
 
-(define (abs-with-if x)
-  (if (< x 0)
-      (- x)
-      x))
+(define abs-with-if
+  (lambda (x)
+    (if (< x 0)
+        (- x)
+        x)))
 
 (abs -5)
 (abs-with-if -5)
+
+;; 1.1.7
+
+(define sqrt-iter
+  (lambda (guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x))))
+
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
+
+(define sqrt-iter-infinite
+  (lambda (guess x)
+    (new-if (good-enough? guess x)
+            guess
+            (sqrt-iter-infinite (improve guess x) x))))
+
+(define improve
+  (lambda (guess x)
+    (average guess (/ x guess))))
+
+(define average
+  (lambda (x y)
+    (/ (+ x y) 2)))
+
+(define good-enough?
+  (lambda (guess x)
+    (< (abs (- (square guess) x)) 0.001)))
+
+(define sqrt
+  (lambda (x)
+    (sqrt-iter 1.0 x)))
+
+(sqrt 9)
+(sqrt (+ 100 37))
+(sqrt (+ (sqrt 2) (sqrt 3)))
+(square (sqrt 1000))
