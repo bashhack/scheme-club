@@ -1,0 +1,147 @@
+* Session 1
+** Chapter 1
+*** Section 1.0 - Introduction to Listp and Computational Processing
+**** The 'computational process' is an abstraction  at the core of the computer - 
+      it operates on 'data', governed by pattern(s) of rules we call a 'program'.
+**** These processes execute programs, barring 'bugs' or 'errors' that may occur.
+**** Mindfulness must be applied to the organization of our programs, as well-structured 
+      programs may be visualized, act predictably, etc. while those that eschew
+      modular design, or are riddled with errors can lead to catastrophic failure.
+**** Invented in late 1950s as a 'formalism for reasoning about the use
+      of certain kinds of logical expressions, called "recursion equations", as a model
+      for computation', Lisp was first conceived by John McCarthy (MIT, 1960)
+      in his paper;
+      'Recursive Functions of Symbolic Expressions and Their Computation by Machine'
+
+      NOTE: In this context, 'formalism' refers to a 'theory that holds that statements
+            of mathematics and logic can be considered to be statements about the
+            consequences of certain string manipulation rules.
+**** A Lisp "interpreter" is a machine that executes computational processes 
+      as defined in the Lisp language.
+**** Lisp is an acronym for 'LISt Processing'
+**** Lisp has many dialects (including Scheme), representing a diverse and experimental
+      history of language features born of necessity, curiousity, and domain.
+**** Lisp is useful for the study of computation processes because it is 'an
+      excellent medium for studying important programming constructs and data structures
+      and for relating them to the linguistic features that support them.'
+**** The most important of these features is that Lisp 'procedures' (i.e., a description
+      of a process) can be represented and operated on as data - in other languages, like
+      Python and JavaScript, we might say that 'everything is an object' whereas the
+      zen-like understanding of Lisp is that 'everything is data'
+**** Lisp is, ultimately, a flexible language for us to explore fundamental techniques
+*** Section 1.1 - The Elements of Programming
+    NOTE:
+        When we talk about a 'procedure' we are generally speaking of a 'function' -
+        we can generally use the terms interchangeably when speaking about Lisp,
+        though there are some nuances that may be articulated depending on context.
+**** A programming language is a 'framework for organizing our ideas about processes',
+     and accomplishes this by affording us:
+     
+     * primitive expressions (simplest elements of the language, i.e., numbers, strings, etc)
+     * means of combination (allow us to transform simple elements into compound elements)
+     * means of abstration (allow us to name and manipulate compound elements)
+
+     * 'We deal with two kinds of elements: procedures and data' - (these are really the same!),
+       where data represents the 'thing' we want to operate on/against while the procedure defines
+       how we may do so.
+**** Programming languages help us not only accurately and comprehensively describe primitive data,
+      but give us the tools necessary for combining and 'abstracting procedures and data'
+*** Section 1.1.1 - Expressions
+**** 'Expressions' are typed or defined within a program, and the 'interpreter' displays the result
+      of 'evaluating' that expression
+**** One example of a primitive expression is an entity of a type 'number'
+**** Numeric expressions can be combined with a primitive procedure (i.e., '+' or '*', etc),
+      in order to create a compound expression that 'represents the application of the procedure to
+      those numbers'
+**** Examples: see `1_building_abstractions_with_procedures.ss`
+**** Expressions like these are 'combinations' - the parts of the form are (from left to right) are
+     the 'operator' and the 'operands' - the value of the combination is found by 'applying' the 
+     function/procedure declared by the operator to the 'arguments' which are the values of our
+     operands
+**** Lisp uses 'prefix notation' (i.e., placing the operator to the left of its operands) as opposed
+     to 'infix notation' used in most programming languages. The advantages of this notational system
+     arise when handling arbitary numbers of arguments to a function, and when nesting combinations
+*** Section 1.1.2 - Naming and the Environment
+**** We cannot get far in any programming language without a means of mapping names to values,
+     that is, we need a method for creating variables. To do this in Scheme, we use the `define`
+     keyword: 
+     #+BEGIN_SRC scheme
+       (define pi 3.14)
+     #+END_SRC
+
+     #+RESULTS:
+     : #<void>
+
+**** Computational objects may have arbitrarially complex structure/form, though we must weigh
+      such complexity against added potential for computational or cognitive overhead
+**** The 'memory' that stores/tracks name-object pairs is known as the 'global environment'
+*** Section 1.1.3 - Evaluating Combinations
+**** Evaluating a combination consists of:
+      * Evaluating the subexpressions of the combination
+      * Applying the procedure/function that is the value of the leftmost subexpression (operator)
+        to the arguments that are the values of the other subexpressions (operands)
+
+      NOTE: This process of combinatorial evaluation is akin to the 'beta reduction' found in 
+            the lambda calculus (or Haskell), though this is an inexact comparison as the mechanism 
+            of 'reduction' differs in some key aspects to Lisp's 'compilation/evaluation'
+**** When we notate Lisp program text, we use 'symbolic expression' or 's-expressions/sexprs'.
+      Lisp programs are valid sexprs, but not all sexprs are valid Lisp programs.
+      Diagramming sexprs leads to clear tree structures (nodes + branches) - as is shown in 
+      Figure 1.1:
+
+      ;; An expression, or more completely, a Lisp s-expression
+      #+BEGIN_SRC scheme
+        (* (+ 2 (* 4 6)) (+ 3 5 7))
+      #+END_SRC
+
+      #+RESULTS:
+      : 390
+
+      ;; Notated s-expression
+      ;; 
+      ;;               390_______
+      ;;              /  |       \__
+      ;;             *   26         15
+      ;;               / | \     / | \  \
+      ;;             +   2  24  +  3  5  7
+      ;;                   / | \
+      ;;                  *  4  6
+**** Some names, like `define` do not follow the expected rules of evaluation - these
+      exceptions are called 'special forms'. These have their own evaluation rules -
+      that is, a form like `define` in `(define x 3)` does not apply `define` to the 
+      arguments `x` and `3`, its purpose is to associate a value with a name. It is worth
+      noting that the form above is also not a combination.
+*** Section 1.1.4 - Compound Procedures
+**** Compound procedures allow us to express powerful abstractions with ease
+**** Compound procedures are simply procedures that are user-defined - this is in contrast
+      to primitive procedures owned by the language itself
+**** A procedure (function) has the general form: `(define (<name> <formal parameter>) <body>)`
+*** Section 1.1.5 - The Substitution Model for Procedure Application
+**** In evaluating a combination where the operator is a compount procedure, 
+      the interpreter follows a process similar to primitive procedures. See 1.1.3 above.
+**** Formally, we describe this process as the 'substitution model' for procedure application.
+      It's primary function is to determine the 'meaning' of the procedure application.
+**** In the description of evaluation provided in 1.1.3, the interpreter evaluates the 
+      operator first, then moves on to evaluate the operands, finally applying the 
+      'resulting procedure to the resulting arguments' - this is known as 
+      'applicative-order evaluation'. In contrast, there also exists 'normal-order evaluation'.
+      In this variant, we 'fully expand and then reduce'. Lisp uses 'applicative-order',
+      in part, because it avoids duplication of expression evaluation and because
+      the complexity of normal-order evaluation can become quite difficult
+      depending on the procedure content. We also know normal-order evaluation as 'lazy' evaluation,
+      or 'call by name'. Applicative-order evaluation we commonly refer to as 'eager' evaluation,
+      or 'call by value'.
+*** Section 1.1.6 - Conditional Expressions and Predicates
+**** When we want to test against a series of predicates (i.e., 'case analysis'), 
+      we use the special form `cond` where:
+     #+BEGIN_SRC scheme
+       ;; (cond (<p1> <e1>)
+       ;;       (<p2> <e2>)
+       ;;       ...
+       ;;       (<pn> <en>))
+     #+END_SRC
+**** Predicates are evaluated from 'top to bottom', with the interpreter looking
+      for a `true` value (then returning the value of the corresponding expression),
+      or returning a value of undefined if no true value is found.
+**** `cond`/`if` forms, along with primitive predicates (`<`, `=`, and `>`) and logical
+      operators (`and`/`or`/`not`) allow us to write compound predicates
