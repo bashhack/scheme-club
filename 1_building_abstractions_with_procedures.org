@@ -216,3 +216,15 @@
       be a free variable, each procedure refering to the `x` of our enclosing
       proceure `sqrt`
 *** Section 1.2 - Procedures and the Processes They Generate
+**** 'The ability to visualize the consequences of the actions under
+      consideration is crucial to becoming an expert programmer.'
+**** 'A procedure is a pattern for the "local evolution" of a
+      computational process.'
+**** 'We would like to be able to make statements about the overall,
+      or "global", behavior of a process whose local evolution has
+      been specified by a procedure.'
+**** To do this, we'll examine 'common "shapes" for processes generated
+      by simple procedures' as well as their 'computational resources
+      of time and space' - in other words, we'll look at scale analysis
+      (i.e., Big O notation)
+*** Section 1.2.1 - Linear Recursion and Iteration
