@@ -72,7 +72,7 @@
      #+RESULTS:
      : #<void>
 
-**** Computational objects may have arbitrarially complex structure/form, though we must weigh
+**** Computational objects may have arbitrarily complex structure/form, though we must weigh
       such complexity against added potential for computational or cognitive overhead
 **** The 'memory' that stores/tracks name-object pairs is known as the 'global environment'
 *** Section 1.1.3 - Evaluating Combinations
@@ -185,3 +185,34 @@
           (sqrt-iter 1.0 x)))
      #+END_SRC
      
+*** Section 1.1.8 - Procedures as Black-Box Abstractions
+**** `sqrt-iter` provides us with our first real introduction to recursion
+**** We should seek to understand and break apart problems into smaller subproblems
+**** The process by which we separate a problem into its parts is called decomposition
+**** Successful decomposition is to split not arbitrarily points, but at those points 
+      where it makes logical sense and where doing so results in each individual part 
+      performing a discrete task - in some ways, this echoes the Unix philosophy
+      of "do one thing and do it well"
+**** To decompose our code in these logical separations is to abstract our code
+      via 'procedural abstraction'
+**** Procedural abstraction allows us to 'suppress implementation detail'
+**** One such detail that should never really matter to the user of a procedure 
+      is the names given to formal parameters, so long as their names remain consistent
+      throughout the body of the procedure
+**** When a value is given to a formal parameter, that entity is known as a 
+      bound variable - that is, the procedure definition has binds its formal parameters
+      to corresponding values. If a variable is not bound, we say that it is 'free'.
+**** The expressions 'for which a binding defines a name' is known as 'scope'
+**** In the following expression, `guess` and `x` are bound, `<`, `-`, `abs` and `square` are free:
+     
+     #+BEGIN_SRC scheme
+       (define good-enough?
+         (lambda (guess x)
+           (< (abs (- (square guess) x)) 0.001)))
+     #+END_SRC
+**** We can leverage 'block structure' in order to internalize our definitions. 
+     See: `1_building_abstractions_with_procedures.ss`
+**** Similarly, we can combine block structure with lexical scoping to allow `x` to
+      be a free variable, each procedure refering to the `x` of our enclosing
+      proceure `sqrt`
+*** Section 1.2 - Procedures and the Processes They Generate

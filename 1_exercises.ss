@@ -74,20 +74,20 @@
     (* x x)))
 
 ;; Generic
-(define sum-n-largest-sqaures-from-list
+(define sum-n-largest-squares-from-list
   (lambda (n xs)
     (apply + (map square (take n (reverse (insertion-sort-asc xs)))))))
 
-(sum-n-largest-sqaures-from-list 2 '(1 5 281 492 3 2 1 0))
+(sum-n-largest-squares-from-list 2 '(1 5 281 492 3 2 1 0))
 
 ;; Specific
-(define sum-largest-two-sqaures-from-three-args
+(define sum-largest-two-squares-from-three-args
   (lambda (n m z)
     (cond
      ((= n (min n m z)) (+ (square m) (square z)))
-     (else (sum-largest-two-sqaures-from-args m z n)))))
+     (else (sum-largest-two-squares-from-args m z n)))))
 
-(sum-largest-two-sqaures-from-three-args 3 2 1)
+(sum-largest-two-squares-from-three-args 3 2 1)
 
 ;; 1.4
 
@@ -180,27 +180,23 @@
 ;; that uses this kind of end test. Does this work better for small or
 ;; large numbers?
 
-(define square
-  (lambda (x)
-    (* x x)))
+(define average
+  (lambda (x y)
+    (/ (+ x y) 2)))
+
+(define improve
+  (lambda (guess x)
+    (average guess (/ x guess))))
+
+(define good-enough?
+  (lambda (guess x)
+    (< (abs (- (square guess) x)) 0.001)))
 
 (define sqrt-iter
   (lambda (guess x)
     (if (good-enough? guess x)
         guess
         (sqrt-iter (improve guess x) x))))
-
-(define improve
-  (lambda (guess x)
-    (average guess (/ x guess))))
-
-(define average
-  (lambda (x y)
-    (/ (+ x y) 2)))
-
-(define good-enough?
-  (lambda (guess x)
-    (< (abs (- (square guess) x)) 0.001)))
 
 (define our-sqrt
   (lambda (x)
@@ -232,41 +228,30 @@
 ;; On my 64-bit CPU, that value is near 99999999999999999, at which point
 ;; no value is returned and the process winds up in infinite recusion.
 
-(define square-alt
-  (lambda (x)
-    (* x x)))
-
-(define sqrt-iter-alt
+(define sqrt-iter-based-on-previous-guess
   (lambda (previous-guess guess x)
-    (if (good-enough-alt? previous-guess guess)
+    (if (good-enough?-based-on-previous-guess previous-guess guess)
         guess
-        (sqrt-iter-alt guess (improve-alt guess x) x))))
+        (sqrt-iter-based-on-previous-guess guess (improve guess x) x))))
 
-(define improve-alt
-  (lambda (guess x)
-    (average-alt guess (/ x guess))))
-
-(define average-alt
-  (lambda (x y)
-    (/ (+ x y) 2)))
-
-(define good-enough-alt?
+(define good-enough?-based-on-previous-guess
   (lambda (previous-guess guess)
     (< (abs (- previous-guess guess)) 0.001)))
 
-(define our-sqrt-alt
+(define our-sqrt-based-on-previous-guess
   (lambda (x)
-    (sqrt-iter-alt 0 1.0 x)))
+    (sqrt-iter-based-on-previous-guess 0 1.0 x)))
 
-(< (our-sqrt-alt .000004) (our-sqrt .000004))
-(< (our-sqrt-alt 9) (our-sqrt 9))
-(< (our-sqrt-alt 100000000000) (our-sqrt 100000000000))
+(< (our-sqrt-based-on-previous-guess .000004) (our-sqrt .000004))
+(< (our-sqrt-based-on-previous-guess 9) (our-sqrt 9))
+(< (our-sqrt-based-on-previous-guess 100000000000) (our-sqrt 100000000000))
 
 ;; I modified the original `good-enough?` to take into account
-;; the previous-guess in the form of `good-enough-alt?`.
-;; Likewise, I then updated the signature of the main `sqrt-iter-alt`
-;; procedure, such that I could provide a starting (or previous-guess)
-;; value when initializing `our-sqrt-alt`.
+;; the previous-guess in the form of `good-enough?-based-on-previous-guess`.
+;; Likewise, I then updated the signature of the main
+;; `sqrt-iter-based-on-previous-guess` procedure, such that I could
+;; provide a starting (or previous-guess) value when initializing
+;; `our-sqrt-based-on-previous-guess`.
 ;; In general, there is an improvement on precision for smaller values,
 ;; while larger values retain their inaccuracies.
 
@@ -282,3 +267,59 @@
 
 ;; Use this formula to implement a cube-root procedure analogous to the
 ;; square-root procedure.
+
+;; Specific
+(define good-enough?
+  (lambda (previous-guess guess)
+    (< (abs (- previous-guess guess)) 0.001)))
+
+(define improve-via-newtons-cube-root-method
+  (lambda (guess x)
+    (/ (+ (/ x (square guess)) (* guess 2)) 3)))
+
+(define cube-root-iter
+  (lambda (previous-guess guess x)
+    (if (good-enough? previous-guess guess)
+        guess
+        (cube-root-iter guess (improve-via-newtons-cube-root-method guess x) x))))
+
+(define cube-root
+  (lambda (x)
+    (cube-root-iter 0 1.0 x)))
+
+(cube-root 27)
+
+;; General solution...
+(define nth-root
+  (lambda (degree x tolerance)
+
+    (define square
+      (lambda (x)
+        (* x x)))
+
+    (define power
+      (lambda (base x)
+        (cond ((zero? x) 1)
+              ((even? x) (square (power base (/ x 2))))
+              (else (* base (power base (- x 1)))))))
+
+    (define good-enough?
+      (lambda (next guess)
+        (< (abs (- next guess)) tolerance)))
+
+    (define improve
+      (lambda (guess)
+        (/ (+ (* (- degree 1) guess) (/ x (power guess (- degree 1)))) degree)))
+
+    (define *nth-root
+      (lambda (guess)
+        (let ((next (improve guess)))
+          (if (good-enough? next guess)
+              guess
+              (*nth-root next)))))
+
+    (*nth-root 1.0)))
+
+(nth-root 2 4 0.001)
+(nth-root 3 27 0.001)
+(nth-root 3 -1 0.001)

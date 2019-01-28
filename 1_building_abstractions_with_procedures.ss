@@ -103,3 +103,72 @@ circumference
 (sqrt (+ 100 37))
 (sqrt (+ (sqrt 2) (sqrt 3)))
 (square (sqrt 1000))
+
+;; 1.1.8
+
+(define double
+  (lambda (x)
+    (+ x x)))
+
+(define square
+  (lambda (x)
+    (* x x)))
+
+(define square
+  ;; Euler's number raised to power `(double (log x))`
+  (lambda (x)
+    (exp (double (log x)))))
+
+;; Using block structure
+
+(define sqrt
+  (lambda (x)
+
+    (define average
+      (lambda (x y)
+        (/ (+ x y) 2)))
+
+    (define good-enough?
+      (lambda (guess x)
+        (< (abs (- (square guess) x)) 0.001)))
+
+    (define improve
+      (lambda (guess x)
+        (average guess (/ x guess))))
+
+    (define sqrt-iter
+      (lambda (guess x)
+        (if (good-enough? guess x)
+            guess
+            (sqrt-iter (improve guess x) x))))
+
+    (sqrt-iter 1.0 x)))
+
+(sqrt 4)
+
+;; Using block structure and lexical scoping
+
+(define sqrt
+  (lambda (x)
+
+    (define average
+      (lambda (x y)
+        (/ (+ x y) 2)))
+
+    (define good-enough?
+      (lambda (guess)
+        (< (abs (- (square guess) x)) 0.001)))
+
+    (define improve
+      (lambda (guess)
+        (average guess (/ x guess))))
+
+    (define sqrt-iter
+      (lambda (guess)
+        (if (good-enough? guess)
+            guess
+            (sqrt-iter (improve guess)))))
+
+    (sqrt-iter 1.0)))
+
+(sqrt 4)
