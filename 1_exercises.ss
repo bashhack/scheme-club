@@ -583,6 +583,24 @@
 ;; Write a procedure that computes `f` by means of a recursive process.
 ;; Write a procedure that computes `f` by means of an iterative process.
 
+;; Using a recursive process, it's quite simple to mirror the equation itself:
+(define f
+  (lambda (n)
+    (if (< n 3)
+        n
+        (+ (f (- n 1))
+           (* 2 (f (- n 2)))
+           (* 3 (f (- n 3)))))))
+
+;; For the iterative process, I found it a little less intuitive:
+(define f-iter
+  (lambda (n)
+    ))
+
+(define f
+  (lambda (n)
+    (f-iter n)))
+
 ;; 1.12
 
 ;; The following pattern of numbers is called 'Pascal's triangle'
