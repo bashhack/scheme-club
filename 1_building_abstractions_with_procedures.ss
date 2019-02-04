@@ -190,3 +190,33 @@ circumference
                     (iter (* counter product)
                           (+ counter 1))))))
       (iter 1 1))))
+
+(define A
+  (lambda (x y)
+    (cond ((= y 0) 0)
+          ((= x 0) (* 2 y))
+          ((= y 1) 2)
+          (else (A (- x 1) (A x (- y 1)))))))
+
+;; 1.2.2
+
+(define fib
+  (lambda (n)
+    (cond ((= n 0) 0)
+          ((= n 1) 1)
+          (else (+ (fib (- n 1))
+                   (fib (- n 2)))))))
+
+
+(define fib-iter
+  (lambda (a b count)
+    (if (= count 0)
+        b
+        (fib-iter (+ a b) a (- count 1)))))
+
+
+(define fib
+  (lambda (n)
+    (fib-iter 1 0 n)))
+
+(fib 10)

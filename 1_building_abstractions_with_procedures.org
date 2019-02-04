@@ -317,3 +317,19 @@
                           (fib (- n 2)))))))
         (fib 5)
      #+END_SRC
+**** In general, 'the number of steps required by a tree-recursive process will
+     be proportional to the number of nodes in the tree, while the space required
+     will be proportional to the maximum depth of the tree.'
+**** An iterative solution to expressing the Fibonacci sequence can be written as:
+
+     #+BEGIN_SRC scheme
+       (define fib-iter
+         (lambda (a b count)
+           (if (= count 0)
+               b
+               (fib-iter (+ a b) a (- count 1)))))
+
+       (define fib
+         (lambda (n)
+           (fib-iter 1 0 n)))
+     #+END_SRC

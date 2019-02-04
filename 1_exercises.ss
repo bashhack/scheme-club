@@ -572,11 +572,35 @@
 ;; The definition of function `h` would be 2^^n (or 2↑↑n, using Knuth's notation)
 ;; (expt 2 (expt 2 (expt 2 2))) ;; 65536
 
-(define fib
-  (lambda (n)
-    (cond ((= n 0) 0)
-          ((= n 1) 1)
-          (else (+ (fib (- n 1))
-                   (fib (- n 2)))))))
+;; 1.11
 
-(fib 10)
+;; A function `f` is defined by the rule that:
+;;
+;;          n if n < 3
+;; f(n) = {
+;;          f(n - 1) + 2f(n - 2) + 3f(n - 3) if n >= 3
+;;
+;; Write a procedure that computes `f` by means of a recursive process.
+;; Write a procedure that computes `f` by means of an iterative process.
+
+;; 1.12
+
+;; The following pattern of numbers is called 'Pascal's triangle'
+;;
+;;                         1
+;;                       1   1
+;;                     1   2   1
+;;                   1   3   3   1
+;;                 1   4   6   4   1
+;;                       . . .
+;; The numbers at the edge of the triangle are all 1, and each number
+;; inside the triangle is the sum of the two numbers above it.
+;; Write a procedure that computes elements of Pascal's triangle by means
+;; of a recursive process.
+
+;; 1.13
+
+;; Prove that Fib(n) is the closest integer to phi^n / sqrt(5) where phi = (1 + sqrt(5))/2
+;; Hint: Let psi = (1 - sqrt(5))/2
+;; Use induction and the definition of the Fibonacci numbers to prove that
+;; Fib(n) = (phi^n - psi^n)/sqrt(5)
