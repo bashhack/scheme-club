@@ -228,3 +228,92 @@
       of time and space' - in other words, we'll look at scale analysis
       (i.e., Big O notation)
 *** Section 1.2.1 - Linear Recursion and Iteration
+**** Factorials offer many valid computational approaches
+**** One such way is to understand that `n!` is equivalent to `n * (n - 1)!`
+     We can translate this into code with ease:
+
+     #+BEGIN_SRC scheme
+       (define factorial
+         (lambda (n)
+           (if (= n 1)
+               1
+               (* n (factorial (- n 1))))))
+     #+END_SRC
+**** By using our substitution model (i.e., applicative-order evaluation),
+     we can visualize the execution of this procedure
+
+     #+BEGIN_SRC scheme
+       (factorial 6)
+       (* 6 (factorial 5))
+       (* 6 (* 5 (factorial 4)))
+       (* 6 (* 5 (* 4 (factorial 3))))
+       (* 6 (* 5 (* 4 (* 3 (factorial 2)))))
+       (* 6 (* 5 (* 4 (* 3 (* 2 (factorial 1))))))
+       (* 6 (* 5 (* 4 (* 3 (* 2 1)))))
+       (* 6 (* 5 (* 4 (* 3 2))))
+       (* 6 (* 5 (* 4 6)))
+       (* 6 (* 5 24))
+       (* 6 120)
+       720
+     #+END_SRC
+**** We could also describe computing a factorial `n!` as
+     'we first multiply 1 by 2, then multiply the result by 3,
+     then by 4, and so on until we reach n'. In other words,
+     we keep track of a counter (from 1 to n) and a running product.
+
+     #+BEGIN_SRC scheme
+       (define factorial-linear-iter
+         (lambda (n)
+           (letrec ((iter
+                     (lambda (product counter)
+                       (if (> counter n)
+                           product
+                           (iter (* counter product)
+                                 (+ counter 1))))))
+             (iter 1 1))))
+     #+END_SRC
+**** Both the linear recursive and linear iterative approach are valid -
+     but their fundamental approach differs, as do their 'shapes'
+**** In the recursive case, the shape is one of expansion then contraction,
+     building a 'chain of deferred operations' contracting when the operations
+     are actually executed.
+
+     The length of the 'chain of deferred multiplications, and hence the amount
+     of information needed to keep track of it, grows linearly with n (is proportional
+     to n), just like the number of steps.' This is called a 'linear recursive process'.
+**** In the iterative case, at each step we track all necessary state, resulting
+     in the flat shape that does not grow or shrink over the course of its evaluation.
+     An 'iterative process is one whose state can be summarized by a fixed number
+     of state variables, together with a fixed rule that describes how the state
+     variables should be updated as the process moves from state to state and
+     an (optional) end test that specifies conditions under which the
+     process should terminate.'
+
+     The number of steps required grows linearly with n. Such a process is called
+     a 'linear iterative process'.
+**** We should be 'careful not to confuse the notion of a recursive process with
+     the notion of a recursive procdure' - speaking of a recursive procedure is
+     refers to the fact that a procedure references (directly or indirectly) itself.
+**** In other languages (Pascal, Ada, and C) - a recursive procedure consumes
+     more and more memory as the number of procedure calls increases - even when
+     the process 'described is, in principle, iterative.'
+**** Using a 'tail-recursive' implementation of a language allows us to
+     execute an 'iterative process in constant space, even if the iterative process
+     is described by a recursive procedure'
+*** Section 1.2.2 - Tree Recursion
+**** Another pattern of computation is 'tree recursion',
+     where leaf nodes are themselves recursive
+**** There is the possibility that as process evolves, nodes
+     will repeat recursive work performed by other nodes
+**** A textbook example of tree recursion (and its performance
+     downsides) is given below:
+
+     #+BEGIN_SRC scheme
+       (define fib
+         (lambda (n)
+           (cond ((= 0) 0)
+                 ((= n 1) 1)
+                 (else (+ (fib (- n 1))
+                          (fib (- n 2)))))))
+        (fib 5)
+     #+END_SRC

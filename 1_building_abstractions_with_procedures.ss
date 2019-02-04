@@ -172,3 +172,21 @@ circumference
     (sqrt-iter 1.0)))
 
 (sqrt 4)
+
+;; 1.2.1
+
+(define factorial-linear-recur
+  (lambda (n)
+    (if (= n 1)
+        1
+        (* n (factorial-linear-recur (- n 1))))))
+
+(define factorial-linear-iter
+  (lambda (n)
+    (letrec ((iter
+              (lambda (product counter)
+                (if (> counter n)
+                    product
+                    (iter (* counter product)
+                          (+ counter 1))))))
+      (iter 1 1))))
