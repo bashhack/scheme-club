@@ -333,3 +333,26 @@
          (lambda (n)
            (fib-iter 1 0 n)))
      #+END_SRC
+*** Section 1.2.3 - Orders of Growth
+**** We can talk about computational resources in many ways. One of the 
+     most common methods to do so is using 'Big O/Little o/Theta/Omega' notation - 
+     a notation that allows us to talk about/reason about 'order of growth'.
+**** Orders of growth frame resource usage by a process as inputs become larger
+**** Thinking about expressing orders of growth begins by establishing
+     some initial values:
+     
+     - let n be the size of the problem
+     - let R(n) be the resources a process requires for a problem of size n
+     - R(n) has an order of growth Theta(f(n)), in other words R(n) = Theta(f(n))
+       - moreover, we would say that Theta(f(n)) = k1f(n) <= R(n) <= k2f(n)
+**** In our linear recursive process, we would say that our process:
+     
+     - Steps required for the process grows as Theta(n)
+     - Space required for the process grows as Theta(n)
+**** In our linear iterative process, the space requirements were much different:
+     
+     - Steps required for the process grows as Theta(n) (linear)
+     - Space required for the process grows as Theta(1) (constant)
+**** Orders of growth 'provide only a crude description of the behavior of a process'
+*** Section 1.2.4 - Exponentiation
+*** Section 1.2.5 - Greatest Common Divisors
