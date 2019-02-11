@@ -355,4 +355,53 @@
      - Space required for the process grows as Theta(1) (constant)
 **** Orders of growth 'provide only a crude description of the behavior of a process'
 *** Section 1.2.4 - Exponentiation
+**** Exponentiation can be expressed recursively as:
+     b^n = b * b^(n - 1)
+**** We can translate this easily into Scheme:
+     
+      #+BEGIN_SRC scheme
+        (define (expt b n)
+          (if (= n 0)
+              1
+              (* b (expt b (- n 1)))))
+      #+END_SRC
+**** This linear recursive solution has step and space requirements of `O(n)`
+**** A linear iterative solution can also be expressed as:
+    
+      #+BEGIN_SRC scheme
+        (define expt-iter
+          (lambda (b counter product)
+            (if (= counter 0)
+                product
+                (expt-iter b (- counter 1) (* b product)))
+
+        (define expt
+          (lambda (b n)
+            (expt-iter b n 1)))
+
+        ;; (expt-iter 2 3 1)
+        ;; (expt-iter 2 2 2)
+        ;; (expt-iter 2 1 4)
+        ;; (expt-iter 2 0 8)
+      #+END_SRC
+**** By leveraging successive squaring we can optimize our procedure:
+     
+      b^n = (b^(n/2))^2 (if n is even)
+      b^n = b * b^(n - 1) (if n is odd)
+**** Translating this to Scheme, we can create a fast-exponentiation procedure:
+     
+      #+BEGIN_SRC scheme
+        (define even?
+          (lambda (n)
+            (= (remainder n 2) 0)))
+
+        (define fast-expt
+          (lambda (b n)
+            (cond ((= n 0) 1)
+                  ((even? n) (square (fast-expt b (/ n 2))))
+                  (else (* b (fast-expt b (- n 1)))))))
+      #+END_SRC
+**** This new fast-exponentiation procedures allows the size of the exponent 
+      to double for each new multiplication, essentially reducing to a 
+      step and space complexity of O(log n)
 *** Section 1.2.5 - Greatest Common Divisors
