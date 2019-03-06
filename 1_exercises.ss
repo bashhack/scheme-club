@@ -951,6 +951,42 @@
 ;; the technique of defining an invariant quantity remains unchanged from state to state
 ;; is a powerful way to think about the design of iterative algorithms.)
 
+(define square
+  (lambda (x)
+    (* x x)))
+
+(define fast-expt
+  (lambda (b n)
+    (cond ((= n 0) 1)
+          ((even? n) (square (fast-expt b (/ n 2))))
+          (else (* b (fast-expt b (- n 1)))))))
+
+;; Original:
+(define expt-iter
+  (lambda (b n product)
+    (if (= n 0)
+        product
+        (expt-iter b (- n 1) (* b product)))))
+
+(define expt-iter-logarithmic
+  (lambda (b n product)
+    (cond ((= n 0) product)
+          ;; b^(n/2)^2 == (b^2)^(n/2)
+          ((even? n) (expt-iter-logarithmic (square b) (/ n 2) product))
+          (else (expt-iter-logarithmic b (- n 1) (* b product))))))
+
+(define expt
+  (lambda (b n)
+    (expt-iter b n 1)))
+
+(define expt-logarithmic
+  (lambda (b n)
+    (expt-iter-logarithmic b n 1)))
+
+(fast-expt 5 3)
+(expt 5 3)
+(expt-logarithmic 5 3)
+
 ;; 1.17
 
 ;; The exponentiation algorithms in this section are based on performing
@@ -969,11 +1005,57 @@
 ;; by 2. Using these, design a multiplication procedure analogous
 ;; to `fast-expt` that uses a logarithmic number of steps.
 
+(define double
+  (lambda (x)
+    (+ x x)))
+
+(define halve
+  (lambda (x)
+    (/ x 2)))
+
+(define fast-multiply
+  (lambda (a b)
+    (cond ((= b 0) 0)
+          ((= b 1) a)
+          ((even? b) (double (fast-multiply a (halve b))))
+          (else (+ a (fast-multiply a (- b 1)))))))
+
+(fast-mult 2 7)
+(= (fast-mult 32 74) (* 32 74))
+
 ;; 1.18
 
 ;; Using the results of 1.16 and 1.17, devise a procedure that generates
 ;; an iterative process for multiplying two integers in terms of adding,
 ;; doubling, and halving and uses a logarithmic number of steps.
+
+(define fast-mult-iter
+  (lambda (a b product)
+    (cond ((= b 0) product)
+          ((even? b) (fast-mult-iter (double a) (halve b) product))
+          (else (fast-mult-iter a (- b 1) (+ a product))))))
+
+;; without (double a)
+;; 3 2 0
+;; (fast-mult-iter 3 1 0)
+;; (fast-mult-iter 3 0 3)
+;; 3
+
+;; with...
+;; 3 2 0
+;; (fast-mult-iter 6 1 0)
+;; (fast-mult-iter 6 0 6)
+;; 6
+
+;; 4 3 0
+;; (fast-mult-iter 4 2 4)
+;; (fast-mult-iter 8 1 4)
+;; (fast-mult-iter 8 0 12)
+;; 12
+
+(fast-mult-iter 3 1 0)
+(fast-mult-iter 2 1 0)
+(fast-mult-iter 3 2 0)
 
 ;; 1.19
 
