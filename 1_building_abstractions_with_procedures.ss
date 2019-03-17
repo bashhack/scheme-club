@@ -270,3 +270,53 @@ circumference
         ((= kinds-of-coins 5) 50)))
 
 (count-change 100)
+
+;; 1.2.3
+
+;; R(n) => resources a process requires for a problem of size n
+
+;; R(n) has an order of growth \theta(f(n)), where constraints k1f(n) < R(n) k2f(n)
+
+;; Big Theta notation describes an order of growth tightly bound,
+;; whereas Big O is used in describing the upper bound
+
+;; More generally, we can think of algorithmic complexity/orders of growth as:
+;;
+;; Upper bound, 'worst-case-scenario':
+;;   - maximum time for a program to produce output based on its inputs
+;; Lower bound, 'best-case scenario':
+;;   - minimum time for a program to produce output based on its inputs
+
+;; 1.2.4
+
+;; linear recursive - \theta(n) steps and \theta(n) space
+(define expt
+  (lambda (b n)
+    (if (= n 0)
+        1
+        (* b (expt b (- n 1))))))
+
+;; linear iterative - \theta(n) steps and \theta(1) (constant) space
+(define expt
+  (lambda (b n)
+    (expt-iter b n 1)))
+
+(define expt-iter
+  (lambda (b counter product)
+    (if (= counter 0)
+        product
+        (expt-iter b
+                   (- counter 1)
+                   (* b product)))))
+
+;; using successive squaring to achive \theta(log n)
+(define even?
+  (lambda (n)
+    (= (remainder n 2) 0)))
+
+(define fast-expt
+  (lambda (b n)
+    (cond ((= n 0) 1)
+          ((even? n) (square (fast-expt b (/ n 2))))
+          (else (* b (fast-expt b (- n 1)))))))
+
