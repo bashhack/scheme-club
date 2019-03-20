@@ -140,6 +140,9 @@
        ;;       ...
        ;;       (<pn> <en>))
      #+END_SRC
+
+     #+RESULTS:
+
 **** Predicates are evaluated from 'top to bottom', with the interpreter looking
       for a `true` value (then returning the value of the corresponding expression),
       or returning a value of undefined if no true value is found.
@@ -389,8 +392,12 @@
       b^n = (b^(n/2))^2 (if n is even)
       b^n = b * b^(n - 1) (if n is odd)
 **** Translating this to Scheme, we can create a fast-exponentiation procedure:
-     
+
       #+BEGIN_SRC scheme
+        (define square
+          (lambda (x)
+            (* x x)))
+
         (define even?
           (lambda (n)
             (= (remainder n 2) 0)))
@@ -400,8 +407,74 @@
             (cond ((= n 0) 1)
                   ((even? n) (square (fast-expt b (/ n 2))))
                   (else (* b (fast-expt b (- n 1)))))))
+
+        (fast-expt 2 2)
       #+END_SRC
+
 **** This new fast-exponentiation procedures allows the size of the exponent 
       to double for each new multiplication, essentially reducing to a 
       step and space complexity of O(log n)
 *** Section 1.2.5 - Greatest Common Divisors
+**** The greatest common divisor (GCD) of two integers a and b is defined
+      to be the largest integer that divides both a and b with no remainder.
+**** We need to know how to compute GCDs in order to reduce 
+      rational numbers to their lowest terms.
+
+      To reduce a rational number to lowest terms, we must divie both
+      the numerator and the denominator by their GCD. For example,
+      16/28 reduces to 4/7.
+**** We can find the GCD by factoring two integers and searching for common factors,
+      however, there is a much more efficient algorithm from Euclid. The algorithm
+      first appears in Euclid's 'Elements' (Book 7, ca. 300 B.C.). Per Donald Knuth (1973),
+      it can be considered the oldest non-trivial algorithm. The ancient Egyptian 
+      fast-mult-iter from Exercise 1.18 is older, but Knuth explains that it was
+      a set of illustrative examples whereas Euclid's Algorithm is presented as
+      a general algorithm.
+**** Euclid's Algorithm is based on the observation that:
+
+      If 'r' is the remainder when 'a' is divided by 'b',
+      then the common divisors of 'a' and 'b' are
+      precisely the same as the common divisors of 'b' and 'r'.
+      
+**** Succinctly, GCD(a,b) = GCD(b,r)
+**** Using this observation, we reduce the problem to computing the GCD of smaller
+      and smaller pairs of integers. For example:
+      
+      GCD(206, 40) = GCD(40, 6)
+                   = GCD(6, 4)
+                   = GCD(4, 2)
+                   = GCD(2, 0)
+                   = 2
+**** We can express Euclid's Algorithm in code, as:
+     
+     #+BEGIN_SRC scheme
+       (define gcd
+         (lambda (a b)
+           (if (= b 0)
+               a
+               (gcd b (remainder a b)))))
+       
+       (gcd 206 40)
+     #+END_SRC
+**** This generates an iterative process whose steps grow as the log of the numbers involved
+**** Lame's Theorem:
+      Gabriel Lame (a French mathematician and engineer known for his 
+      work in mathematical physics), proved this theorem in 1845.
+      
+      "If Euclid's Algorithm requires 'k' steps to compute the GCD of some pair,
+       then the smaller number in the pair must be greater than or equal
+       to the kth Fibonacci number."
+
+      This theorem allows us to compute an order-of-growth estimate for Euclid's Algorithm.
+      Let 'n' be the smaller of two inputs to the procedure. If the process takes
+      'k' steps, then we know:
+
+      n >= Fib(k) or phi^k / sqrt(5)
+      
+      Therefore, the number of steps 'k' grows as the logarithm (to the base of phi) of 'n',
+      or \theta(log n).
+*** Section 1.2.6 - Example: Testing for Primality
+**** We aim to explore two methods for checking the primality of an integer n,
+      one with order of growth \theta(sqrt(n)), and a 'probabilistic' algorithm
+      with order of growth \theta(log n).
+**** 

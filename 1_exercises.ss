@@ -1106,6 +1106,77 @@
 ;; performed. How many `remainder` operations are actually performed in
 ;; normal-order evaluation of `(gcd 206 40)`? In the applicative-order evaluation?
 
+(define gcd
+  (lambda (a b)
+    (if (= b 0)
+        a
+        (gcd b (remainder a b)))))
+
+;; For normal-order or lazy evaluation, we'll fully expand then reduce...
+(gcd 206 40)
+
+(if (= 40 0)
+    206
+    (gcd 40 (remainder 206 40)))
+
+;; 1 -
+;; (remainder 206 40)
+(if (= (remainder 206 40) 0) ;; (= 6 0)
+    40
+    (gcd (remainder 206 40)
+         (remainder 40 (remainder 206 40))))
+
+;; 2 -
+;; (remainder 40 (remainder 206 40))
+(if (= (remainder 40 (remainder 206 40)) 0) ;; (= 4 0)
+    (remainder 206 40)
+    (gcd (remainder 40 (remainder 206 40))
+         (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))))
+
+;; 4 -
+;; (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+(if (= (remainder (remainder 206 40) (remainder 40 (remainder 206 40))) 0) ;; (= 2 0)
+    (remainder 40 (remainder 206 40))
+    (gcd (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))
+         (remainder (remainder 40 (remainder 206 40))
+                    (remainder (remainder 206 40)
+                               (remainder 40 (remainder 206 40))))))
+
+;; 7 -
+;; (remainder (remainder 40 (remainder 206 40))
+;;            (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))
+(if (= (remainder (remainder 40 (remainder 206 40))
+              (remainder (remainder 206 40)
+                         (remainder 40 (remainder 206 40)))) 0) ;; (= 0 0)
+    (remainder (remainder 206 40)
+               (remainder 40 (remainder 206 40)))
+    (gcd (remainder (remainder 40 (remainder 206 40))
+                    (remainder (remainder 206 40)
+                               (remainder 40 (remainder 206 40))))
+         (remainder (remainder (remainder 206 40)
+                               (remainder 40 (remainder 206 40)))
+                    (remainder (remainder 40 (remainder 206 40))
+                               (remainder (remainder 206 40)
+                                          (remainder 40 (remainder 206 40))))            )))
+
+;; 4 more to go from evaluation of the 'a' form above:
+(remainder (remainder 206 40)
+           (remainder 40 (remainder 206 40)))
+
+(+ 1 2 4 7 4) ;; => 18
+
+;; There were 18 remainder operations in the normal-order evaluation of (gcd 206 40)
+
+;; For applicative-order evaluation, we'll reduce the inner functions first...
+
+(gcd 206 40)
+
+(if (= 40 0)
+    40
+    )
+
 ;; 1.21
 
 ;; Use the `smallest-divisor` procedure to find the smallest divisor of each
